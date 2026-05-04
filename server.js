@@ -7,6 +7,7 @@ const path = require("path");
 const express = require("express");
 
 const app = express();
+
 app.use(express.static(path.join(__dirname, "public")));
 
 function normalizeWhatsAppNumber(raw) {
@@ -68,17 +69,17 @@ app.get("/", (_req, res) => {
     waUrl
   )}">
   <title>Redirecionando — Melhor Preço Net</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #000000;
-      --navy: #0a192f;
-      --red: #e61e2a;
-      --gold: #ffd700;
-      --text: #f0f4f8;
-      --muted: #9aacbf;
+      color-scheme: dark;
+      --bg: #05070a;
+      --card: #0b1220;
+      --text: #e8eef4;
+      --muted: #8b9aad;
+      --wa: #25d366;
+      --brand-red: #e61e2a;
+      --brand-gold: #ffcc33;
+      --brand-navy: #0b1b32;
     }
     * { box-sizing: border-box; }
     body {
@@ -87,101 +88,123 @@ app.get("/", (_req, res) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
-      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(120% 80% at 50% -20%, #152238 0%, var(--bg) 55%);
       color: var(--text);
-      padding: 1.25rem;
+      padding: clamp(0.75rem, 4vw, 1.5rem);
     }
     .card {
       width: 100%;
       max-width: 26rem;
-      background: linear-gradient(165deg, rgba(10, 25, 47, 0.55) 0%, rgba(0, 0, 0, 0.92) 100%);
-      border: 1px solid rgba(10, 25, 47, 0.9);
+      background: linear-gradient(165deg, #111a2b 0%, var(--card) 100%);
       border-radius: 20px;
-      padding: 2rem 1.75rem 2.25rem;
+      padding: clamp(1.5rem, 5vw, 2rem) clamp(1.25rem, 4vw, 1.75rem);
       text-align: center;
       box-shadow:
-        0 0 0 1px rgba(230, 30, 42, 0.12),
-        0 24px 48px rgba(0, 0, 0, 0.55);
+        0 12px 48px rgba(0,0,0,.45),
+        0 0 0 1px rgba(255,255,255,.06);
     }
-    .loader {
+    /* Círculo com logo: zoom para cortar margem preta da arte e ganhar tamanho no mobile */
+    .logo-orbit {
+      --orbit-size: min(13.5rem, 72vw);
       position: relative;
-      width: min(200px, 52vw);
-      height: min(200px, 52vw);
-      margin: 0 auto 1.5rem;
+      width: var(--orbit-size);
+      height: var(--orbit-size);
+      margin: 0 auto 1.35rem;
     }
-    .loader-ring {
+    .logo-orbit__ring {
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      border: 5px solid rgba(10, 25, 47, 0.65);
-      border-top-color: var(--red);
-      border-right-color: var(--red);
-      animation: spin 0.95s linear infinite;
-      filter: drop-shadow(0 0 12px rgba(230, 30, 42, 0.25));
+      background: conic-gradient(
+        from 220deg,
+        var(--brand-red),
+        var(--brand-gold),
+        var(--brand-navy),
+        var(--brand-red)
+      );
+      animation: orbit-spin 2.8s linear infinite;
+      /* Mostra só o contorno: o centro fica vazio para a logo não girar */
+      -webkit-mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 5px),
+        #fff calc(100% - 4px)
+      );
+      mask: radial-gradient(
+        farthest-side,
+        transparent calc(100% - 5px),
+        #fff calc(100% - 4px)
+      );
     }
-    .loader-inner {
+    @media (prefers-reduced-motion: reduce) {
+      .logo-orbit__ring { animation: none; }
+    }
+    @keyframes orbit-spin {
+      to { transform: rotate(360deg); }
+    }
+    .logo-orbit__mask {
       position: absolute;
-      inset: 11px;
+      inset: 5px;
       border-radius: 50%;
-      background: var(--bg);
+      overflow: hidden;
+      background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: min(14px, 3vw);
-      overflow: hidden;
+      z-index: 1;
     }
-    .loader-inner img {
+    .logo-orbit__img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      display: block;
+      object-fit: cover;
+      object-position: 50% 42%;
+      transform: scale(1.62);
+      transform-origin: center center;
+      will-change: transform;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    @media (min-width: 480px) {
+      .logo-orbit__img {
+        transform: scale(1.5);
+      }
     }
     h1 {
-      font-size: clamp(1.05rem, 3.8vw, 1.2rem);
+      font-size: clamp(1.05rem, 3.8vw, 1.3rem);
       font-weight: 600;
-      line-height: 1.4;
-      margin: 0 0 0.6rem;
-      letter-spacing: 0.01em;
-    }
-    h1 .accent {
-      color: var(--red);
-      font-weight: 700;
+      line-height: 1.35;
+      margin: 0 0 0.5rem;
     }
     p {
       margin: 0;
-      font-size: 0.92rem;
+      font-size: clamp(0.88rem, 2.8vw, 0.95rem);
       color: var(--muted);
-      font-weight: 500;
     }
     .wa-note {
-      margin-top: 1.35rem;
-      font-size: 0.78rem;
-      opacity: 0.92;
-      line-height: 1.45;
+      margin-top: 1.25rem;
+      font-size: clamp(0.75rem, 2.5vw, 0.8rem);
+      opacity: 0.9;
     }
     a {
-      color: var(--gold);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-    a:hover {
-      color: #ffe566;
+      color: var(--wa);
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="loader" role="status" aria-live="polite" aria-label="A redirecionar">
-      <div class="loader-ring" aria-hidden="true"></div>
-      <div class="loader-inner">
-        <img src="/logo-melhor-preco-net.png" width="200" height="200" alt="Melhor Preço Net">
+    <div class="logo-orbit">
+      <div class="logo-orbit__ring" aria-hidden="true"></div>
+      <div class="logo-orbit__mask">
+        <img
+          class="logo-orbit__img"
+          src="/logo.png"
+          width="512"
+          height="512"
+          alt="Melhor Preço Net"
+          decoding="async"
+          fetchpriority="high"
+        />
       </div>
     </div>
-    <h1>Encaminhando para o <span class="accent">melhor vendedor</span> da sua região</h1>
+    <h1>Encaminhando para o melhor vendedor da sua região</h1>
     <p>Aguarde um instante…</p>
     <p class="wa-note">Se não abrir automaticamente, <a href="${escapeHtmlAttr(
       waUrl
