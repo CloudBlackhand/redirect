@@ -156,16 +156,10 @@ app.get("/", (_req, res) => {
     .logo-orbit__img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      object-position: 50% 42%;
-      transform: scale(1.62);
-      transform-origin: center center;
-      will-change: transform;
-    }
-    @media (min-width: 480px) {
-      .logo-orbit__img {
-        transform: scale(1.5);
-      }
+      object-fit: contain;
+      object-position: center center;
+      padding: 6px;
+      box-sizing: border-box;
     }
     h1 {
       font-size: clamp(1.05rem, 3.8vw, 1.3rem);
