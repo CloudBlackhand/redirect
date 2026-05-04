@@ -3,9 +3,11 @@
  * Railway define PORT automaticamente.
  */
 
+const path = require("path");
 const express = require("express");
 
 const app = express();
+app.use(express.static(path.join(__dirname, "public")));
 
 function normalizeWhatsAppNumber(raw) {
   if (!raw || typeof raw !== "string") return null;
@@ -65,23 +67,18 @@ app.get("/", (_req, res) => {
   <meta http-equiv="refresh" content="${Math.ceil(delayMs / 1000)};url=${escapeHtmlAttr(
     waUrl
   )}">
-  <title>Redirecionando</title>
+  <title>Redirecionando — Melhor Preço Net</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light dark;
-      --bg: #0f1419;
-      --card: #1a2332;
-      --text: #e8eef4;
-      --muted: #8b9aad;
-      --accent: #25d366;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f4f6f8;
-        --card: #ffffff;
-        --text: #1a1a1a;
-        --muted: #5c6b7a;
-      }
+      --bg: #000000;
+      --navy: #0a192f;
+      --red: #e61e2a;
+      --gold: #ffd700;
+      --text: #f0f4f8;
+      --muted: #9aacbf;
     }
     * { box-sizing: border-box; }
     body {
@@ -90,7 +87,7 @@ app.get("/", (_req, res) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: "Segoe UI", system-ui, sans-serif;
+      font-family: "Montserrat", "Segoe UI", system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       padding: 1.25rem;
@@ -98,49 +95,93 @@ app.get("/", (_req, res) => {
     .card {
       width: 100%;
       max-width: 26rem;
-      background: var(--card);
-      border-radius: 16px;
-      padding: 2rem 1.75rem;
+      background: linear-gradient(165deg, rgba(10, 25, 47, 0.55) 0%, rgba(0, 0, 0, 0.92) 100%);
+      border: 1px solid rgba(10, 25, 47, 0.9);
+      border-radius: 20px;
+      padding: 2rem 1.75rem 2.25rem;
       text-align: center;
-      box-shadow: 0 12px 40px rgba(0,0,0,.18);
+      box-shadow:
+        0 0 0 1px rgba(230, 30, 42, 0.12),
+        0 24px 48px rgba(0, 0, 0, 0.55);
     }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      margin: 0 auto 1.25rem;
-      border: 3px solid color-mix(in srgb, var(--accent) 25%, transparent);
-      border-top-color: var(--accent);
+    .loader {
+      position: relative;
+      width: min(200px, 52vw);
+      height: min(200px, 52vw);
+      margin: 0 auto 1.5rem;
+    }
+    .loader-ring {
+      position: absolute;
+      inset: 0;
       border-radius: 50%;
-      animation: spin 0.85s linear infinite;
+      border: 5px solid rgba(10, 25, 47, 0.65);
+      border-top-color: var(--red);
+      border-right-color: var(--red);
+      animation: spin 0.95s linear infinite;
+      filter: drop-shadow(0 0 12px rgba(230, 30, 42, 0.25));
+    }
+    .loader-inner {
+      position: absolute;
+      inset: 11px;
+      border-radius: 50%;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: min(14px, 3vw);
+      overflow: hidden;
+    }
+    .loader-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
     h1 {
-      font-size: 1.25rem;
+      font-size: clamp(1.05rem, 3.8vw, 1.2rem);
       font-weight: 600;
-      line-height: 1.35;
-      margin: 0 0 0.5rem;
+      line-height: 1.4;
+      margin: 0 0 0.6rem;
+      letter-spacing: 0.01em;
+    }
+    h1 .accent {
+      color: var(--red);
+      font-weight: 700;
     }
     p {
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: var(--muted);
+      font-weight: 500;
     }
     .wa-note {
-      margin-top: 1.25rem;
-      font-size: 0.8rem;
-      opacity: 0.85;
+      margin-top: 1.35rem;
+      font-size: 0.78rem;
+      opacity: 0.92;
+      line-height: 1.45;
     }
     a {
-      color: var(--accent);
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    a:hover {
+      color: #ffe566;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="spinner" aria-hidden="true"></div>
-    <h1>Encaminhando para o melhor vendedor da sua região</h1>
+    <div class="loader" role="status" aria-live="polite" aria-label="A redirecionar">
+      <div class="loader-ring" aria-hidden="true"></div>
+      <div class="loader-inner">
+        <img src="/logo-melhor-preco-net.png" width="200" height="200" alt="Melhor Preço Net">
+      </div>
+    </div>
+    <h1>Encaminhando para o <span class="accent">melhor vendedor</span> da sua região</h1>
     <p>Aguarde um instante…</p>
     <p class="wa-note">Se não abrir automaticamente, <a href="${escapeHtmlAttr(
       waUrl
